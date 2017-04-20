@@ -1,0 +1,50 @@
+#Backend Exercise - Ashley Gittens (written in Python language)
+#Program filters Video CSV file for rows that are video clip has privacy==anybody(row(2) && over 10 likes row(5) && over 200 plays(row 3) && title under 30 characters(row 1)
+import csv
+import os
+import sys
+
+#Check if clip.csv file exists 
+if os.path.isfile("clips.csv"):
+	print("File exists.")
+else:
+	print("File does not exist. Exiting... ")
+	sys.exit()
+
+#load in clips.csv 
+clip= open("clips.csv","r")
+clipReader=csv.reader(clip)
+
+
+#Check if write files can be opened
+try:
+#CSV list of clip_id's that passed the tests
+	clipWriteV=open("valid.csv","wb") 
+	writeValid=csv.writer(clipWriteV)
+	writeValid.writerow(["id"])
+
+#CSV list of clip_id's that failed the tests
+	clipWriteInV=open("invalid.csv","wb")
+	writeInV=csv.writer(clipWriteInV)
+except IOError:
+	print("Could not open write files. Exiting... ")
+	sys.exit()
+	
+#Check if file can be read or written to 
+try:
+#clip has privacy==anybody(row(2) && over 10 likes row(5) && over 200 plays(row 3) && title under 30 characters(row 1)
+	for row in clipReader:
+		if len(row)!=0:
+			if row[2]=="anybody" and row[5]>10 and row[3]>200 and len(row[1])<30:
+			#list of clip id's that passed the test
+				writeValid.writerow([row[0]])
+				continue
+			else:
+			#list of clip id's that failed the test along with header
+				writeInV.writerow([row[0]])
+				
+	clip.close()
+	clipWriteInV.close()
+	clipWriteV.close()
+except IOError:
+	print("Could not read or write to file. Exiting... ")
